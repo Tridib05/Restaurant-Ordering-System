@@ -1,16 +1,16 @@
-const { defineConfig } = require('@vue/cli-service')
-const path = require('path');
-// module.exports = defineConfig({
-//   transpileDependencies: true
-// });
-
 module.exports = {
-  outputDir: path.resolve(__dirname, '../backend/restaurant_management'),
   devServer: {
+    port: 8080,
     proxy: {
-      '/': {
-        target: 'http://localhost:8001'
+      '^/api': {
+        target: 'http://localhost:8001',
+        changeOrigin: true,
+        pathRewrite: {
+          '^/api': '/api'
+        }
       }
     }
-  }
-}
+  },
+  outputDir: '../backend/restaurant_management',
+  assetsDir: 'static'
+};

@@ -14,9 +14,10 @@ import router from "./routes/routes.js";
 
 // import path
 import path from "path";
+import { fileURLToPath } from "url";
 
 // use path
-const __dirname = path.resolve();
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 // init express
 const app = express();
@@ -28,28 +29,21 @@ app.use(bodyParser.urlencoded({ extended: true }));
 //use cors
 app.use(cors());
 
-// use router
+// API routes should be handled first
 app.use(router);
-
-// // Handle production
-// if (process.env.NODE_ENV === 'production'){
-//   // Static folder
-//   app.use(express.static(__dirname + '/public/'));
-
-//   // Handle SPA
-//   app.get(/.*/, (req,res)=> res.sendFile(__dirname + '/public/index.html'));
-// }
 
 app.get('/api', function(req, res){
   res.json({ message: 'Welcome to restaurant api' });
 });
 
-app.use(express.static(path.join(__dirname, './restaurant_management/')));
-app.get('/*', function (req, res) {
-  res.sendFile(path.join(__dirname, './restaurant_management/index.html'))
+// Serve static files from the 'restaurant_management' directory (where Vue app is built)
+app.use(express.static(path.join(__dirname, './restaurant_management')));
+
+// Handle SPA - serve index.html for any non-API routes
+// This should come AFTER API routes to avoid conflicts
+app.get('*', function (req, res) {
+  res.sendFile(path.join(__dirname, './restaurant_management/index.html'));
 });
-
-
 
 // PORT
 const PORT = process.env.PORT || 8001;
@@ -63,5 +57,5 @@ app.listen(PORT, () => {
 // https://www.bezkoder.com/deploy-node-js-app-heroku-cleardb-mysql/
 // https://www.youtube.com/watch?v=W-b9KGwVECs
 // https://stackoverflow.com/questions/43362014/heroku-no-default-language-could-be-detected-for-this-app-error-thrown-for-no
-// https://stackoverflow.com/questions/16128395/what-is-procfile-and-web-and-worker
+// https://stackoverflow.com/questions/16128395/what is-procfile-and-web-and-worker
 // https://www.youtube.com/watch?v=lwOsI8LtVEQ
